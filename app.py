@@ -1,9 +1,8 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import pickle
 
-# Load the trained logistic regression model and scaler
+# Load the trained logistic regression model
 with open('titanic_model.pkl', 'rb') as model_file:
     model = pickle.load(model_file)
 
@@ -19,12 +18,10 @@ def preprocess_input(pclass, sex, age, sibsp, parch, fare, embarked):
     })
     return data
 
-# Streamlit app layout
 def main():
     st.title("Titanic Survival Prediction")
     st.write("Enter passenger details to predict survival probability.")
 
-    # User inputs for prediction
     pclass = st.selectbox("Passenger Class (Pclass)", [1, 2, 3])
     sex = st.selectbox("Sex", ["Male", "Female"])
     age = st.slider("Age", 0, 100, 30)
@@ -33,17 +30,15 @@ def main():
     fare = st.number_input("Fare", min_value=0.0, value=32.2)
     embarked = st.selectbox("Port of Embarkation (Embarked)", ["S", "C", "Q"])
 
-    # Predict button
     if st.button("Predict"):
-    input_data = preprocess_input(pclass, sex, age, sibsp, parch, fare, embarked)
-    prediction = model.predict(input_data)[0]
-    prediction_proba = model.predict_proba(input_data)[0][1]
+        input_data = preprocess_input(pclass, sex, age, sibsp, parch, fare, embarked)
+        prediction = model.predict(input_data)[0]
+        prediction_proba = model.predict_proba(input_data)[0][1]
 
-    if prediction == 1:
-        st.success(f"The passenger is predicted to survive with a probability of {prediction_proba:.2%}.")
-    else:
-        st.error(f"The passenger is predicted not to survive with a probability of {(1 - prediction_proba):.2%}.")
-
+        if prediction == 1:
+            st.success(f"The passenger is predicted to survive with a probability of {prediction_proba:.2%}.")
+        else:
+            st.error(f"The passenger is predicted not to survive with a probability of {(1 - prediction_proba):.2%}.")
 
 if __name__ == "__main__":
     main()
